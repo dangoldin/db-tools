@@ -60,9 +60,7 @@ class Migrator:
 
         rows = self.run_select('SELECT * from {0} where {1} = "{2}"'.format(table, field, str(start_val)))
 
-        vals = [row[field] for row in rows]
-        # Dedup
-        vals = list(set(vals))
+        vals = list(set([row[field] for row in rows]))
         for val in vals:
             self.run_delete(table, field, val)
 
@@ -71,6 +69,7 @@ class Migrator:
         if table in self.table_map_v2:
             next_steps = self.table_map_v2[table]
             for field, key in next_steps.iteritems():
+                vals = list(set(row[field] for row in rows))
                 for val in vals:
                     self.run_migration(key, val)
 
